@@ -34,7 +34,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	rawImg := util.Tensor2RawImage(util.Image2Tensor(img))
+	rawImg := util.Tensor2RawPixel(util.Image2Tensor(img))
 	packet := new(util.Imagepacket)
 	packet.Name = "Lenna"
 	packet.Img = rawImg
@@ -56,7 +56,7 @@ func main() {
 	}
 
 	// saves image locally
-	tensor := util.RawImage2Tensor(response.Img)
+	tensor := util.RawPixel2Tensor(response.Img)
 	err = util.SaveImage("./assets/saved.jpeg", util.Tensor2Image(tensor))
 	if err != nil {
 		fmt.Println(err)

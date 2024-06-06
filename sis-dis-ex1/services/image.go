@@ -6,7 +6,7 @@ import (
 
 type ImageService struct{}
 
-func (t *ImageService) UpsideDown(pixels [][]util.RawImage) {
+func (t *ImageService) UpsideDown(pixels [][]util.RawPixel) {
 	for i := 0; i < len(pixels); i++ {
 		tr := pixels[i]
 		for j := 0; j < len(tr)/2; j++ {

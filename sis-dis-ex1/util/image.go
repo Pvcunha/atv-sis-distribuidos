@@ -79,22 +79,22 @@ func Tensor2Image(pixels [][]color.Color) image.Image {
 	return nImg
 }
 
-func Tensor2RawImage(pixels [][]color.Color) [][]RawImage {
+func Tensor2RawPixel(pixels [][]color.Color) [][]RawPixel {
 
-	var result [][]RawImage
+	var result [][]RawPixel
 	// put pixels into two three two dimensional array
 	for i := 0; i < len(pixels); i++ {
-		var y []RawImage
+		var y []RawPixel
 		for j := 0; j < len(pixels[0]); j++ {
 			r, g, b, a := pixels[i][j].RGBA()
-			y = append(y, RawImage{R: r, G: g, B: b, A: a})
+			y = append(y, RawPixel{R: r, G: g, B: b, A: a})
 		}
 		result = append(result, y)
 	}
 	return result
 }
 
-func RawImage2Tensor(pixels [][]RawImage) [][]color.Color {
+func RawPixel2Tensor(pixels [][]RawPixel) [][]color.Color {
 	var result [][]color.Color
 
 	for i := 0; i < len(pixels); i++ {
