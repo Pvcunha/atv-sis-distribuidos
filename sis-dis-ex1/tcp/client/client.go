@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"encoding/gob"
 	"fmt"
 	"nelson/util"
 	"net"
@@ -41,22 +41,22 @@ func main() {
 	packet.Img = rawImg
 
 	// encoder and decoder to send and receive through connection
-	encoder := json.NewEncoder(conn)
-	decoder := json.NewDecoder(conn)
+	encoder := gob.NewEncoder(conn)
+	decoder := gob.NewDecoder(conn)
+	var response util.Imagepacket
 
 	// sends package
 	for i := 0; i < 10000; i++ {
 		start := time.Now()
 		encoder.Encode(packet)
 		// receive package
-		var response util.Imagepacket
 		err = decoder.Decode(&response)
+		rtt := time.Since(start)
 
 		if err != nil {
 			fmt.Println("error while receiving")
 			return
 		}
-		rtt := time.Since(start)
 		fmt.Println(rtt.Nanoseconds())
 		// saves image locally
 		// tensor := util.RawPixel2Tensor(response.Img)

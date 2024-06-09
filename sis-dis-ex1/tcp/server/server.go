@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"encoding/gob"
 	"fmt"
 	"io"
 	"net"
@@ -11,9 +11,10 @@ import (
 )
 
 func handleClient(conn net.Conn) {
-	jsonEncoder := json.NewEncoder(conn)
-	jsonDecoder := json.NewDecoder(conn)
-
+	// encoder := json.NewEncoder(conn)
+	// decoder := json.NewDecoder(conn)
+	encoder := gob.NewEncoder(conn)
+	decoder := gob.NewDecoder(conn)
 	var data util.Imagepacket
 
 	imgService := new(services.ImageService)
@@ -25,7 +26,7 @@ func handleClient(conn net.Conn) {
 
 	for {
 
-		err := jsonDecoder.Decode(&data)
+		err := decoder.Decode(&data)
 		switch err {
 		case nil:
 			break
@@ -39,7 +40,7 @@ func handleClient(conn net.Conn) {
 		}
 
 		imgService.UpsideDown(data.Img)
-		jsonEncoder.Encode(data)
+		encoder.Encode(data)
 	}
 
 }
