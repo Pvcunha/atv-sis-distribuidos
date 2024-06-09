@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"nelson/util"
 	"net"
+	"time"
 )
 
 func main() {
@@ -44,21 +45,25 @@ func main() {
 	decoder := json.NewDecoder(conn)
 
 	// sends package
-	encoder.Encode(packet)
+	for i := 0; i < 10000; i++ {
+		start := time.Now()
+		encoder.Encode(packet)
+		// receive package
+		var response util.Imagepacket
+		err = decoder.Decode(&response)
 
-	// receive package
-	var response util.Imagepacket
-	err = decoder.Decode(&response)
-
-	if err != nil {
-		fmt.Println("error while receiving")
-		return
+		if err != nil {
+			fmt.Println("error while receiving")
+			return
+		}
+		rtt := time.Since(start)
+		fmt.Println(rtt.Nanoseconds())
+		// saves image locally
+		// tensor := util.RawPixel2Tensor(response.Img)
+		// err = util.SaveImage("./assets/saved.jpeg", util.Tensor2Image(tensor))
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
 	}
 
-	// saves image locally
-	tensor := util.RawPixel2Tensor(response.Img)
-	err = util.SaveImage("./assets/saved.jpeg", util.Tensor2Image(tensor))
-	if err != nil {
-		fmt.Println(err)
-	}
 }
