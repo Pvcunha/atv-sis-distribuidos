@@ -35,7 +35,7 @@ func main() {
 
 	// call server
 	var response util.Imagepacket
-	err = client.Call("services.ImageService", packet, &response)
+	err = client.Call("ImgEditor.UpsideDown", packet, &response)
 
 	if err != nil {
 		fmt.Println("error while receiving")
