@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 
 	"nelson/services"
@@ -25,12 +26,19 @@ func handleClient(conn net.Conn) {
 	for {
 
 		err := jsonDecoder.Decode(&data)
-		imgService.UpsideDown(data.Img)
-		if err != nil {
+		switch err {
+		case nil:
+			break
+		case io.EOF:
+			fmt.Println("Connection closed client side")
+			return
+		default:
 			fmt.Println("error decoding data")
 			fmt.Println(err)
 			return
 		}
+
+		imgService.UpsideDown(data.Img)
 		jsonEncoder.Encode(data)
 	}
 
