@@ -25,7 +25,7 @@ func runServer() {
 	}
 	defer ln.Close()
 
-	fmt.Println("Manda pro pai")
+	fmt.Println("Servidor está online")
 	server.Accept(ln)
 }
 
