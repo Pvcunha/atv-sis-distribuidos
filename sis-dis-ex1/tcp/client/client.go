@@ -2,10 +2,15 @@ package main
 
 import (
 	"encoding/gob"
+	"flag"
 	"fmt"
 	"nelson/util"
 	"net"
 	"time"
+)
+
+var (
+	run = flag.Int("run", 100, "number of runs")
 )
 
 func main() {
@@ -46,7 +51,7 @@ func main() {
 	var response util.Imagepacket
 
 	// sends package
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < *run; i++ {
 		start := time.Now()
 		encoder.Encode(packet)
 		// receive package

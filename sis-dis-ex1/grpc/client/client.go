@@ -39,11 +39,13 @@ const (
 
 var (
 	addr = flag.String("addr", "localhost:50051", "the address to connect to")
+	run  = flag.Int("run", 100, "number of runs")
 )
 
 func main() {
 	flag.Parse()
-	// Set up a connection to the server.
+	// Set up a connection to the server
+
 	conn, err := grpc.NewClient(
 		*addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(7194304)),
@@ -63,17 +65,22 @@ func main() {
 	rawImage := util.Tensor2RawPixel(imgTensor)
 	protoImage := util.RawPixel2ImageData(rawImage)
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	r, err := client.UpsideDownImage(ctx, &pb.ImageRequest{Name: "lena.jpg", Image: protoImage})
-	if err != nil {
-		log.Fatalf("Failed to receive: %v", err)
+	for i := 0; i < *run; i++ {
+		start := time.Now()
+		_, err := client.UpsideDownImage(ctx, &pb.ImageRequest{Name: "lena.jpg", Image: protoImage})
+		if err != nil {
+			log.Fatalf("Failed to receive: %v", err)
+		}
+		rtt := time.Since(start).Nanoseconds()
+		fmt.Println(rtt)
 	}
 
-	rcvImg := util.ImageData2RawPixel(r.GetImage())
-	rcvTensor := util.RawPixel2Tensor(rcvImg)
-	rcvImage := util.Tensor2Image(rcvTensor)
-	util.SaveImage(fmt.Sprintf(util.OutputPath, r.GetName()), rcvImage)
-	log.Printf("Received Image: %s", r.GetName())
+	// rcvImg := util.ImageData2RawPixel(r.GetImage())
+	// rcvTensor := util.RawPixel2Tensor(rcvImg)
+	// rcvImage := util.Tensor2Image(rcvTensor)
+	// util.SaveImage(fmt.Sprintf(util.OutputPath, r.GetName()), rcvImage)
+	// log.Printf("Received Image: %s", r.GetName())
 }

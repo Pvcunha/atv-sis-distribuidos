@@ -1,10 +1,15 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"nelson/util"
 	"net/rpc"
 	"time"
+)
+
+var (
+	run = flag.Int("run", 100, "number of runs")
 )
 
 func main() {
@@ -36,7 +41,7 @@ func main() {
 
 	// call server
 	var response util.Imagepacket
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < *run; i++ {
 		start := time.Now()
 		err = client.Call("ImageServiceRpc.UpsideDown", packet, &response)
 		if err != nil {
