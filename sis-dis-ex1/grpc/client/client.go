@@ -65,8 +65,7 @@ func main() {
 	rawImage := util.Tensor2RawPixel(imgTensor)
 	protoImage := util.RawPixel2ImageData(rawImage)
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	ctx := context.Background()
 
 	for i := 0; i < *run; i++ {
 		start := time.Now()
