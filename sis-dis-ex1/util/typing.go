@@ -2,7 +2,7 @@ package util
 
 type Imagepacket struct {
 	Name string       `json:"dump"`
-	Img  [][]RawPixel `json:"img"`
+	Img  [][]RawPixel `protobuf:"bytes,2,opt,name=image,proto3" json:"image,omitempty"`
 }
 
 type RawPixel struct {

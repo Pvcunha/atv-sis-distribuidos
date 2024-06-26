@@ -7,6 +7,8 @@ import (
 	"image/color"
 	"image/jpeg"
 	"os"
+
+	pb "nelson/grpc/imageserial"
 )
 
 func OpenImage(path string) (image.Image, error) {
@@ -114,4 +116,46 @@ func RawPixel2Tensor(pixels [][]RawPixel) [][]color.Color {
 		result = append(result, y)
 	}
 	return result
+}
+
+func RawPixel2ImageData(pixels [][]RawPixel) *pb.ImageData {
+	var result pb.ImageData
+
+	for i := 0; i < len(pixels); i++ {
+		row := make([]*pb.RawPixel, 0)
+		for j := 0; j < len(pixels[0]); j++ {
+			r, g, b, a := pixels[i][j].Get()
+			row = append(row, &pb.RawPixel{R: r, G: g, B: b, A: a})
+		}
+		result.Rows = append(result.Rows, &pb.RawPixelRow{Pixels: row})
+	}
+	return &result
+}
+
+func ImageData2RawPixel(data *pb.ImageData) [][]RawPixel {
+	var result [][]RawPixel
+
+	for i := 0; i < len(data.Rows); i++ {
+		var y []RawPixel
+		for j := 0; j < len(data.Rows[0].Pixels); j++ {
+			r := data.Rows[i].Pixels[j].GetR()
+			g := data.Rows[i].Pixels[j].GetG()
+			b := data.Rows[i].Pixels[j].GetB()
+			a := data.Rows[i].Pixels[j].GetA()
+			y = append(y, RawPixel{R: r, G: g, B: b, A: a})
+		}
+		result = append(result, y)
+	}
+	return result
+}
+
+func UpsideDown(pixels [][]RawPixel) [][]RawPixel {
+	for i := 0; i < len(pixels); i++ {
+		tr := pixels[i]
+		for j := 0; j < len(tr)/2; j++ {
+			k := len(tr) - j - 1
+			tr[j], tr[k] = tr[k], tr[j]
+		}
+	}
+	return pixels
 }

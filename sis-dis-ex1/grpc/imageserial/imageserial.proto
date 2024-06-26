@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option go_package = "nelson/grpc/imageserial";
+
+package imageserial;
+
+service Image {
+    rpc upsideDownImage (ImageRequest) returns (ImageResponse) {}
+}
+
+// how to receive an image data that is with te format of a matrix of (r, g, b, a)
+
+message RawPixel {
+    uint32 r = 1;
+    uint32 g = 2;
+    uint32 b = 3;
+    uint32 a = 4;
+}
+
+message RawPixelRow {
+    repeated RawPixel pixels = 1;
+}
+
+message ImageData {
+    repeated RawPixelRow rows = 1;
+} 
+
+message ImageRequest {
+    string name = 1;
+    ImageData image = 2;
+}
+
+message ImageResponse {
+    string name = 1;
+    ImageData image = 2;
+}
