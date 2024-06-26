@@ -56,6 +56,7 @@ func main() {
 	defer conn.Close()
 	client := pb.NewImageClient(conn)
 
+	//loadsImage
 	img, err := util.OpenImage(util.ImagePath)
 	if err != nil {
 		panic(err)
