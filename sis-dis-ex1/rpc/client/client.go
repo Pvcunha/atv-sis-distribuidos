@@ -14,6 +14,7 @@ var (
 
 func main() {
 
+	flag.Parse()
 	imagePath := "./assets/Lenna.jpeg"
 
 	serverEndpoint := "localhost:3030"
