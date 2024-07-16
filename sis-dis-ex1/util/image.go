@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"image"
@@ -158,4 +159,22 @@ func UpsideDown(pixels [][]RawPixel) [][]RawPixel {
 		}
 	}
 	return pixels
+}
+
+func Image2Bytes(img image.Image) ([]byte, error) {
+	buffer := new(bytes.Buffer)
+	err := jpeg.Encode(buffer, img, nil)
+	if err != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
+}
+
+func Bytes2Image(data []byte) (image.Image, error) {
+	buffer := bytes.NewBuffer(data)
+	img, err := jpeg.Decode(buffer)
+	if err != nil {
+		return nil, err
+	}
+	return img, nil
 }

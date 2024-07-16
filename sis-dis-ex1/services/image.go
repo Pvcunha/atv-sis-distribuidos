@@ -2,13 +2,13 @@ package services
 
 import (
 	"context"
+	"fmt"
+	"image"
+	"image/color"
 	"log"
 	pb "nelson/grpc/imageserial"
 	"nelson/util"
 )
-
-type Reques struct {
-}
 
 type ImageServiceRpc struct{}
 type ImageService struct{}
@@ -24,6 +24,44 @@ func (t *ImageService) UpsideDown(pixels [][]util.RawPixel) {
 			tr[j], tr[k] = tr[k], tr[j]
 		}
 	}
+}
+
+func (t *ImageServiceRpc) Echo(req util.Packet, resp *util.Packet) error {
+	fmt.Println("echo image")
+	resp.Data = req.Data
+	resp.Name = req.Name
+	return nil
+}
+
+func (t *ImageServiceRpc) GrayScale(req util.Packet, resp *util.Packet) error {
+	fmt.Println("gray scale image")
+	img, err := util.Bytes2Image(req.Data)
+	if err != nil {
+		return err
+	}
+
+	bounds := img.Bounds()
+	width, height := bounds.Max.X, bounds.Max.Y
+	imgSet := image.NewRGBA(bounds)
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			oldColor := img.At(x, y)
+			r, g, b, _ := oldColor.RGBA()
+
+			var gray float32 = (float32(r) * 0.3) + (float32(g) * 0.59) + (float32(b) * 0.11)
+			pixel := color.Gray{uint8(gray / 256)}
+			imgSet.Set(x, y, pixel)
+		}
+	}
+
+	bytes, err := util.Image2Bytes(imgSet)
+	if err != nil {
+		return err
+	}
+	resp.Data = bytes
+	resp.Name = req.Name + "_gray"
+	return nil
 }
 
 func (t *ImageServiceRpc) UpsideDown(req util.Imagepacket, resp *util.Imagepacket) error {

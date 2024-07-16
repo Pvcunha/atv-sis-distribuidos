@@ -15,3 +15,8 @@ type RawPixel struct {
 func (t *RawPixel) Get() (uint32, uint32, uint32, uint32) {
 	return t.R, t.G, t.B, t.A
 }
+
+type Packet struct {
+	Name string
+	Data []byte
+}
