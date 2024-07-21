@@ -133,6 +133,18 @@ func RawPixel2ImageData(pixels [][]RawPixel) *pb.ImageData {
 	return &result
 }
 
+func Bytes2ImageDataGray(bytes []byte) *pb.ImageDataGray {
+	var result pb.ImageDataGray
+	result.Rows = bytes
+	return &result
+}
+
+func ImageDataGray2Bytes(data *pb.ImageDataGray) []byte {
+	var result []byte
+	result = data.Rows
+	return result
+}
+
 func ImageData2RawPixel(data *pb.ImageData) [][]RawPixel {
 	var result [][]RawPixel
 
@@ -159,6 +171,35 @@ func UpsideDown(pixels [][]RawPixel) [][]RawPixel {
 		}
 	}
 	return pixels
+}
+
+func GrayScale(bytesParam []byte) ([]byte, error) {
+	fmt.Println("gray scale image")
+	img, err := Bytes2Image(bytesParam)
+	if err != nil {
+		return nil, err
+	}
+
+	bounds := img.Bounds()
+	width, height := bounds.Max.X, bounds.Max.Y
+	imgSet := image.NewRGBA(bounds)
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			oldColor := img.At(x, y)
+			r, g, b, _ := oldColor.RGBA()
+
+			var gray float32 = (float32(r) * 0.3) + (float32(g) * 0.59) + (float32(b) * 0.11)
+			pixel := color.Gray{uint8(gray / 256)}
+			imgSet.Set(x, y, pixel)
+		}
+	}
+
+	bytes, err := Image2Bytes(imgSet)
+	if err != nil {
+		return nil, err
+	}
+	return bytes, nil
 }
 
 func Image2Bytes(img image.Image) ([]byte, error) {

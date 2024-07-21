@@ -21,10 +21,10 @@ package main
 
 import (
 	"context"
+	"encoding/gob"
 	"flag"
-	"fmt"
+	"image"
 	"log"
-	"time"
 
 	pb "nelson/grpc/imageserial"
 	"nelson/util"
@@ -43,6 +43,7 @@ var (
 )
 
 func main() {
+	gob.Register(image.YCbCr{})
 	flag.Parse()
 	// Set up a connection to the server
 
@@ -61,23 +62,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	/*
+		imgTensor := util.Image2Tensor(img)
+		rawImage := util.Tensor2RawPixel(imgTensor)
+		protoImage := util.RawPixel2ImageData(rawImage)
+	*/
+	imgBytes, err := util.Image2Bytes(img)
 
-	imgTensor := util.Image2Tensor(img)
-	rawImage := util.Tensor2RawPixel(imgTensor)
-	protoImage := util.RawPixel2ImageData(rawImage)
+	protoImage := util.Bytes2ImageDataGray((imgBytes))
+
 	// Contact the server and print out its response.
 	ctx := context.Background()
 
-	for i := 0; i < *run; i++ {
-		start := time.Now()
-		_, err := client.UpsideDownImage(ctx, &pb.ImageRequest{Name: "lena.jpg", Image: protoImage})
-		if err != nil {
-			log.Fatalf("Failed to receive: %v", err)
+	/*
+		for i := 0; i < *run; i++ {
+			start := time.Now()
+			_, err := client.UpsideDownImage(ctx, &pb.ImageRequest{Name: "lena.jpg", Image: protoImage})
+			if err != nil {
+				log.Fatalf("Failed to receive: %v", err)
+			}
+			rtt := time.Since(start).Nanoseconds()
+			fmt.Println(rtt)
 		}
-		rtt := time.Since(start).Nanoseconds()
-		fmt.Println(rtt)
-	}
-
+	*/
 	// rcvImg := util.ImageData2RawPixel(r.GetImage())
 	// rcvTensor := util.RawPixel2Tensor(rcvImg)
 	// rcvImage := util.Tensor2Image(rcvTensor)
