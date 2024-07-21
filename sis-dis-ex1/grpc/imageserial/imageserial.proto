@@ -6,7 +6,7 @@ package imageserial;
 
 service Image {
     rpc upsideDownImage (ImageRequest) returns (ImageResponse) {}
-    rpc GrayScaleImage (ImageRequest) returns (ImageResponse) {}
+    rpc GrayScaleImage (ImageRequestGray) returns (ImageResponseGray) {}
 }
 
 // how to receive an image data that is with te format of a matrix of (r, g, b, a)
