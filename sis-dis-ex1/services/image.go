@@ -66,13 +66,13 @@ func (t *ImageServiceRpc) GrayScale(req util.Packet, resp *util.Packet) error {
 
 func (t *ImageServiceGrpc) GrayScaleImage(ctx context.Context, in *pb.ImageRequestGray) (*pb.ImageResponseGray, error) {
 	log.Printf("Received image %s", in.GetName())
-	img := in.GetImage()
-	bytes := util.ImageDataGray2Bytes(img)
-	grayscale, _ := util.GrayScale(bytes)
+	bytes := in.GetData()
+	responseBytes, err := util.GrayScale(bytes)
+	if err != nil {
+		return nil, err
+	}
 
-	img = util.Bytes2ImageDataGray(grayscale)
-
-	return &pb.ImageResponseGray{Name: in.GetName(), Image: img}, nil
+	return &pb.ImageResponseGray{Name: fmt.Sprintf("%s-grayscale-gprc", in.GetName()), Data: responseBytes}, nil
 }
 
 func (t *ImageServiceRpc) UpsideDown(req util.Imagepacket, resp *util.Imagepacket) error {

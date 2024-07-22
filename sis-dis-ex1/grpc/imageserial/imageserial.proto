@@ -36,16 +36,12 @@ message ImageResponse {
     ImageData image = 2;
 }
 
-message ImageDataGray {
-    bytes rows = 1;
-} 
-
 message ImageRequestGray {
     string name = 1;
-    ImageDataGray image = 2;
+    bytes data = 2;
 }
 
 message ImageResponseGray {
     string name = 1;
-    ImageDataGray image = 2;
+    bytes data = 2;
 }

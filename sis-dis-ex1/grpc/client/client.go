@@ -21,9 +21,8 @@ package main
 
 import (
 	"context"
-	"encoding/gob"
 	"flag"
-	"image"
+	"fmt"
 	"log"
 
 	pb "nelson/grpc/imageserial"
@@ -40,11 +39,14 @@ const (
 var (
 	addr = flag.String("addr", "localhost:50051", "the address to connect to")
 	run  = flag.Int("run", 100, "number of runs")
+	conc = flag.Bool("conc", false, "concurrent mode")
 )
 
-func main() {
-	gob.Register(image.YCbCr{})
+func init() {
 	flag.Parse()
+}
+
+func main() {
 	// Set up a connection to the server
 
 	conn, err := grpc.NewClient(
@@ -68,11 +70,35 @@ func main() {
 		protoImage := util.RawPixel2ImageData(rawImage)
 	*/
 	imgBytes, err := util.Image2Bytes(img)
+	if err != nil {
+		panic(err)
+	}
+	reqData := &pb.ImageRequestGray{Name: "lena.jpg", Data: imgBytes}
+	var response *pb.ImageResponseGray
 
-	protoImage := util.Bytes2ImageDataGray((imgBytes))
+	switch *conc {
+	case false:
+		response, err = client.GrayScaleImage(context.Background(), reqData)
+	case true:
+		panic("not implemented")
+	}
+
+	if err != nil {
+		log.Fatalf("Failed to receive: %v", err)
+	}
+
+	img, err = util.Bytes2Image(response.GetData())
+	if err != nil {
+		panic(err)
+	}
+
+	err = util.SaveImage(fmt.Sprintf(util.OutputPath, response.Name), img)
+	if err != nil {
+		panic(err)
+	}
 
 	// Contact the server and print out its response.
-	ctx := context.Background()
+	// ctx := context.Background()
 
 	/*
 		for i := 0; i < *run; i++ {

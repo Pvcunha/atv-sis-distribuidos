@@ -133,18 +133,6 @@ func RawPixel2ImageData(pixels [][]RawPixel) *pb.ImageData {
 	return &result
 }
 
-func Bytes2ImageDataGray(bytes []byte) *pb.ImageDataGray {
-	var result pb.ImageDataGray
-	result.Rows = bytes
-	return &result
-}
-
-func ImageDataGray2Bytes(data *pb.ImageDataGray) []byte {
-	var result []byte
-	result = data.Rows
-	return result
-}
-
 func ImageData2RawPixel(data *pb.ImageData) [][]RawPixel {
 	var result [][]RawPixel
 
