@@ -161,6 +161,38 @@ func UpsideDown(pixels [][]RawPixel) [][]RawPixel {
 	return pixels
 }
 
+func GrayScaleConc(bytesParam []byte) ([]byte, error) {
+	fmt.Println("gray scale image")
+	img, err := Bytes2Image(bytesParam)
+	if err != nil {
+		return nil, err
+	}
+
+	bounds := img.Bounds()
+	width, height := bounds.Max.X, bounds.Max.Y
+	imgSet := image.NewRGBA(bounds)
+
+	for y := 0; y < height; y++ {
+
+		go func(y int) {
+			for x := 0; x < width; x++ {
+				oldColor := img.At(x, y)
+				r, g, b, _ := oldColor.RGBA()
+
+				var gray float32 = (float32(r) * 0.3) + (float32(g) * 0.59) + (float32(b) * 0.11)
+				pixel := color.Gray{uint8(gray / 256)}
+				imgSet.Set(x, y, pixel)
+			}
+		}(y)
+	}
+
+	bytes, err := Image2Bytes(imgSet)
+	if err != nil {
+		return nil, err
+	}
+	return bytes, nil
+}
+
 func GrayScale(bytesParam []byte) ([]byte, error) {
 	fmt.Println("gray scale image")
 	img, err := Bytes2Image(bytesParam)

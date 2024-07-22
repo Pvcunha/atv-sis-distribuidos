@@ -39,6 +39,7 @@ message ImageResponse {
 message ImageRequestGray {
     string name = 1;
     bytes data = 2;
+    bool conc = 3;
 }
 
 message ImageResponseGray {

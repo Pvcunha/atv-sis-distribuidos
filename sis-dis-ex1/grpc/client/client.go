@@ -24,6 +24,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"time"
 
 	pb "nelson/grpc/imageserial"
 	"nelson/util"
@@ -73,18 +74,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	reqData := &pb.ImageRequestGray{Name: "lena.jpg", Data: imgBytes}
+	reqData := &pb.ImageRequestGray{Name: "lena.jpg", Data: imgBytes, Conc: *conc}
 	var response *pb.ImageResponseGray
 
-	switch *conc {
-	case false:
+	for i := 0; i < *run; i++ {
+		start := time.Now()
 		response, err = client.GrayScaleImage(context.Background(), reqData)
-	case true:
-		panic("not implemented")
-	}
 
-	if err != nil {
-		log.Fatalf("Failed to receive: %v", err)
+		if err != nil {
+			log.Fatalf("Failed to receive: %v", err)
+		}
+		rtt := time.Since(start).Nanoseconds()
+		fmt.Println(rtt)
 	}
 
 	img, err = util.Bytes2Image(response.GetData())

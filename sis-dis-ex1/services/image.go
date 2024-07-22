@@ -67,7 +67,17 @@ func (t *ImageServiceRpc) GrayScale(req util.Packet, resp *util.Packet) error {
 func (t *ImageServiceGrpc) GrayScaleImage(ctx context.Context, in *pb.ImageRequestGray) (*pb.ImageResponseGray, error) {
 	log.Printf("Received image %s", in.GetName())
 	bytes := in.GetData()
-	responseBytes, err := util.GrayScale(bytes)
+
+	var responseBytes []byte
+	var err error
+
+	switch in.GetConc(); {
+	case false:
+		responseBytes, err = util.GrayScale(bytes)
+	case true:
+		responseBytes, err = util.GrayScaleConc(bytes)
+	}
+
 	if err != nil {
 		return nil, err
 	}
