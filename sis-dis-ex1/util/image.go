@@ -8,6 +8,7 @@ import (
 	"image/color"
 	"image/jpeg"
 	"os"
+	"sync"
 
 	pb "nelson/grpc/imageserial"
 )
@@ -172,9 +173,11 @@ func GrayScaleConc(bytesParam []byte) ([]byte, error) {
 	width, height := bounds.Max.X, bounds.Max.Y
 	imgSet := image.NewRGBA(bounds)
 
+	var wg sync.WaitGroup
 	for y := 0; y < height; y++ {
-
+		wg.Add(1)
 		go func(y int) {
+			defer wg.Done()
 			for x := 0; x < width; x++ {
 				oldColor := img.At(x, y)
 				r, g, b, _ := oldColor.RGBA()
@@ -186,6 +189,7 @@ func GrayScaleConc(bytesParam []byte) ([]byte, error) {
 		}(y)
 	}
 
+	wg.Wait()
 	bytes, err := Image2Bytes(imgSet)
 	if err != nil {
 		return nil, err
