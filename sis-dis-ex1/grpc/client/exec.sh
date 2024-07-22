@@ -1,6 +1,6 @@
 #!/bin/bash
 
-go run ../server/server.go &
+# go run ../server/server.go &
 sleep 5
 echo "step 1"
 go run client.go -run=100 -conc=true > grpc_conc_100.txt
